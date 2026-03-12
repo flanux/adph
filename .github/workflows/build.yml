@@ -1,10 +1,10 @@
-name: Build APK
+name: Build and Release APK
 
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -29,8 +29,20 @@ jobs:
     - name: Build with Gradle
       run: gradle assembleRelease
     
-    - name: Upload APK
+    - name: Upload APK as Artifact
       uses: actions/upload-artifact@v4
       with:
         name: phone-truth-apk
         path: app/build/outputs/apk/release/*.apk
+    
+    - name: Create Release
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: build-${{ github.run_number }}
+        name: Phone Truth Build ${{ github.run_number }}
+        files: app/build/outputs/apk/release/*.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
