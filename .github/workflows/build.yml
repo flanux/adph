@@ -26,14 +26,14 @@ jobs:
       with:
         gradle-version: 8.2
     
-    - name: Build with Gradle
-      run: gradle assembleRelease
+    - name: Build Debug APK
+      run: gradle assembleDebug
     
     - name: Upload APK as Artifact
       uses: actions/upload-artifact@v4
       with:
         name: phone-truth-apk
-        path: app/build/outputs/apk/release/*.apk
+        path: app/build/outputs/apk/debug/*.apk
     
     - name: Create Release
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -41,7 +41,7 @@ jobs:
       with:
         tag_name: build-${{ github.run_number }}
         name: Phone Truth Build ${{ github.run_number }}
-        files: app/build/outputs/apk/release/*.apk
+        files: app/build/outputs/apk/debug/*.apk
         draft: false
         prerelease: false
       env:
